@@ -2,12 +2,12 @@
 
 # DBMS initialization
 
-if [  ! -d "~/Downloads/bash/project/DBMS" ]
+if [  ! -d "~/Downloads/bash/Bash-project/DBMS" ]
 then 
-	mkdir -p ~/Downloads/bash/project/DBMS 
+	mkdir -p ~/Downloads/bash/Bash-project/DBMS 
 fi
 
-cd ~/Downloads/bash/project/DBMS 
+cd ~/Downloads/bash/Bash-project/DBMS 
 echo DBMS is running...
 
 # CreateDatabase SelectDatabase CreateTable InsertTable 
@@ -21,11 +21,11 @@ do
 		then
 			echo invalid DBname
 		else
-			if [ -e $DB_name ]
+			if [ -e "$DB_name" ]
 			then 
 				echo $DB_name Database is already exist
 			else
-				mkdir $DB_name
+				mkdir "$DB_name"
 				echo $DB_name Database is created successfully
 			fi
 		fi
@@ -37,9 +37,9 @@ do
 		then
 			echo invalid DBname
 		else
-			if [ -e $DB_name ]
+			if [ -e "$DB_name" ]
 			then 
-				cd $DB_name
+				cd "$DB_name"
 				echo Connected to database $DB_name
 			else
 				echo $DB_name Database doesn\'t exist
