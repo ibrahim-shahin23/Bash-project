@@ -1,4 +1,4 @@
-select var in CreateTable DropTable goBack
+select var in CreateTable DropTable ListTables goBack
 do
 	case $var in
 	"CreateTable")
@@ -68,6 +68,10 @@ do
         cd ~/Downloads/bash/Bash-project/DBMS
 		~/Downloads/bash/Bash-project/database.sh
 	;;
+    	
+	"ListTables")
+        ls 
+    ;;
 	*)
 	echo invalid input
 	esac
