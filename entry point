@@ -12,7 +12,7 @@ echo DBMS is running...
 
 # CreateDatabase SelectDatabase CreateTable InsertTable 
 
-select var in CreateDatabase SelectDatabase
+select var in CreateDatabase SelectDatabase ListDatabases DropDatabase
 do
 	case $var in
 	"CreateDatabase")
@@ -46,6 +46,24 @@ do
 			fi
 		fi
 		
+	;;
+	"ListDatabases")
+		ls 
+	;;
+	"DropDatabase")
+		read -p "Please Enter a Database to remove: " DB_name
+		if [[ -z $DB_name ]]
+		then
+			echo invalid DBname
+		else
+			if [ -e "$DB_name" ]
+			then 
+				rm -r "$DB_name"
+				echo database $DB_name is removed
+			else
+				echo $DB_name Database doesn\'t exist
+			fi
+		fi
 	;;
 	*)
 		echo invalid input
