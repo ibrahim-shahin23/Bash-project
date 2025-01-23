@@ -3,8 +3,9 @@
 # CreateDatabase SelectDatabase CreateTable InsertTable 
 
 cd ~/Downloads/bash/Bash-project/DBMS
+echo "Welcome to the Bash DBMS App!"
 
-select var in CreateDatabase SelectDatabase ListDatabases DropDatabase
+select var in CreateDatabase SelectDatabase ListDatabases DropDatabase exit
 do
 	case $var in
 	"CreateDatabase")
@@ -62,6 +63,10 @@ do
 			fi
 		fi
 	;;
+	"exit")
+		echo "Goodbye!"
+		exit
+		;;
 	*)
 		echo invalid input
 esac

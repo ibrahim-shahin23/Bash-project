@@ -1,3 +1,5 @@
+# echo "alias tables='~/Downloads/bash/Bash-project/tables.sh'" >> ~/.zshrc
+
 read -p "Please enter table name to select from: " TBname
 if [[ -z $TBname ]]
 then
@@ -18,6 +20,7 @@ else
 	    	# Display all data in the table
 	    	echo "Displaying all rows from $TBname:"
 	    	cat "$TBname"
+            ~/Downloads/bash/Bash-project/tables.sh
 	    	;;
 		2)
 	    	# Display specific columns
@@ -33,7 +36,8 @@ else
 				echo "Invalid input. Please enter column numbers separated by commas."
 			else
 	    		cat "$TBname" | cut -d: -f$cols $TBname	
-			fi							   
+			fi
+            ~/Downloads/bash/Bash-project/tables.sh							   
 	    	;;
 		3)
 	    	# Filter rows based on a condition
@@ -58,16 +62,19 @@ else
 					awk -F: -v col="$filterCol" -v value="$filterVal" '$col == value' "$TBname"
 				fi
 			fi
+            ~/Downloads/bash/Bash-project/tables.sh
 			;;
         4)
         	# Go back to main menu
-        	~/Downloads/bash/Bash-project/tables.sh
+        	tables
         	;;
 		*)
 	    	echo "Invalid option"
+            ~/Downloads/bash/Bash-project/tables.sh
 	    	;;
     	esac
 		else
     		echo "Table $TBname doesn't exist"
+            ~/Downloads/bash/Bash-project/tables.sh
 	fi
 fi  
