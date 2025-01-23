@@ -152,13 +152,16 @@ do
 		    	echo "Available columns:"
 		    	columnSize=$(wc -l < .$TBname-metadata)
 		    	for ((i=1; i<=columnSize; i++))
-		    	do
-				colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
-				echo "$i) $colName"
-		    	done
+		    		do
+						colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
+						echo "$i) $colName"
+		    		done
 		    	read -p "Enter the column numbers to display (comma separated): " cols
-
-		    	cat | cut -d: -f$cols $TBname								   
+				if [[ ! $cols =~ ^[0-9]+(,[0-9]+)*$ ]]; then
+    				echo "Invalid input. Please enter column numbers separated by commas."
+				else
+		    		cat "$TBname" | cut -d: -f$cols $TBname	
+				fi							   
 		    	;;
 			3)
 		    	# Filter rows based on a condition
