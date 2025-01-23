@@ -66,7 +66,7 @@ else
 			;;
         4)
         	# Go back to main menu
-        	tables
+        	~/Downloads/bash/Bash-project/tables.sh
         	;;
 		*)
 	    	echo "Invalid option"
