@@ -1,4 +1,4 @@
-select var in CreateTable DropTable ListTables goBack
+select var in CreateTable DropTable ListTables InsertIntoTable SelectFromTable goBack
 do
 	case $var in
 	"CreateTable")
@@ -18,17 +18,26 @@ do
 					for ((i=0; i<$colNum; i++))
 					do
            				line=""
-           				read -p "Enter name of column $((i+1)): " colName
-           				if [[ -z $colName || ! $colName =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-               				echo "Invalid column name. Skipping..."
-               				continue
-           				fi
+						while true
+							do
+           						read -p "Enter name of column $((i+1)): " colName
+           						if [[ -z $colName || ! $colName =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+               						echo "Invalid column name. Please use alphanumeric characters only."
+               					else
+			   						break
+			   					fi
+		   					done
+
            				line+=$colName:
-           				read -p "Enter data type for column $colName (e.g., int, string): " datatype
-           				if [[ -z $datatype || ! $datatype =~ ^(int|string)$ ]]; then
-               				echo "Invalid data type. Use 'int' or 'string'."
-               				continue
+						while true
+						do
+           					read -p "Enter data type for column $colName (e.g., int, string): " datatype
+           					if [[ -z $datatype || ! $datatype =~ ^(int|string)$ ]]; then
+               					echo "Invalid data type. Use 'int' or 'string'."
+							else
+								break
           					fi
+						done
            				line+=$datatype:
            				if [[ $flag -eq 0 ]]; then
                				read -p "Do you want to make $colName the primary key? (yes/no): " pkCheck
@@ -65,13 +74,120 @@ do
 		fi
 	;;
 	"goBack")
-        cd ~/Downloads/bash/Bash-project/DBMS
 		~/Downloads/bash/Bash-project/database.sh
 	;;
-    	
 	"ListTables")
         ls 
     ;;
+	"InsertIntoTable")
+	read -p "please Enter Table Name: " TBName
+		if [[ -z $TBName ]]
+	then
+		echo invalid Table name
+	else
+		if [[ -e $TBName ]]
+		then 
+			columnSize=`wc -l .$TBName-metadata | cut -d" " -f1`
+			data=""
+			for ((i=0;i<columnSize;i++))
+			do
+				line=`sed -n "$(echo $((i+1)))p" .$TBName-metadata`
+				colName=`echo $line | cut -d: -f1`
+				colType=`echo $line | cut -d: -f2`
+				colPkCheck=`echo $line | cut -d: -f3`
+				read -p "please enter a value for $colName: " val
+				if [[ $colPkCheck == "pk" ]]
+				then
+					if [[ `grep -c "$val:" $TBName` -ne 0 ]]
+					then
+						echo "Primary key value already exists. Please enter a unique value."
+						i=$((i-1))
+						continue
+					fi
+				fi
+				if [[ $colType == "int" && ! $val =~ ^[0-9]+$ ]]
+				then
+					echo "Invalid value. Please enter an integer."
+					i=$((i-1))
+					continue
+				elif [[ $colType == "string" && ! $val =~ ^[a-zA-Z0-9_]+$ ]]
+				then
+					echo "Invalid value. Please enter a string."
+					i=$((i-1))
+					continue
+				else data+=$val:
+				fi
+				#echo $colName $colType $colPkCheck
+			done
+			echo $data >> $TBName
+			echo "Data is inserted"
+		else
+			echo table is doesn\'t exist
+		fi
+	fi
+	;;
+	"SelectFromTable")
+    read -p "Please enter table name to select from: " TBname
+    if [[ -z $TBname ]]
+    then
+		echo "Invalid Table name"
+    else
+		if [ -e "$TBname" ]
+		then
+	    	# Read metadata to get column names and data types
+	    	echo "Select operation on table $TBname:"
+	    	echo "1. Display all columns"
+	    	echo "2. Display specific columns"
+	    	echo "3. Filter rows based on conditions"
+	    	read -p "Choose an option (1-3): " option
+	    
+	    	case $option in
+			1)
+		    	# Display all data in the table
+		    	echo "Displaying all rows from $TBname:"
+		    	cat "$TBname"
+		    	;;
+			2)
+		    	# Display specific columns
+		    	echo "Available columns:"
+		    	columnSize=$(wc -l < .$TBname-metadata)
+		    	for ((i=1; i<=columnSize; i++))
+		    		do
+						colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
+						echo "$i) $colName"
+		    		done
+		    	read -p "Enter the column numbers to display (comma separated): " cols
+				if [[ ! $cols =~ ^[0-9]+(,[0-9]+)*$ ]]; then
+    				echo "Invalid input. Please enter column numbers separated by commas."
+				else
+		    		cat "$TBname" | cut -d: -f$cols $TBname	
+				fi							   
+		    	;;
+			3)
+		    	# Filter rows based on a condition
+		    	read -p "Enter the column number to filter: " filterCol
+		    	read -p "Enter the value to filter by: " filterVal
+
+		    	echo "Rows where column $filterCol has value $filterVal:"
+		    	colIndex=$((filterCol-1))
+		    	for row in $(cat "$TBname")
+		    	do
+				rowValues=($row)
+				if [[ "${rowValues[$colIndex]}" == "$filterVal" ]]
+				then
+				    echo "$row"
+				fi
+		    	done
+		    	;;
+			*)
+		    	echo "Invalid option"
+		    	;;
+	    	esac
+			else
+	    		echo "Table $TBname doesn't exist"
+		fi
+    fi  
+	;;
 	*)
 	echo invalid input
 	esac
