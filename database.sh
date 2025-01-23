@@ -2,10 +2,13 @@
 
 # CreateDatabase SelectDatabase CreateTable InsertTable 
 
+cd ~/Downloads/bash/Bash-project/DBMS
+
 select var in CreateDatabase SelectDatabase ListDatabases DropDatabase
 do
 	case $var in
 	"CreateDatabase")
+	cd ~/Downloads/bash/Bash-project/DBMS
 		read -p "Enter a new Database name: " DB_name
 		if [[ -z $DB_name ]]
 		then
@@ -22,6 +25,7 @@ do
 		
 	;;
 	"SelectDatabase")
+	cd ~/Downloads/bash/Bash-project/DBMS
 		read -p "Please Enter your Database name: " DB_name
 		if [[ -z $DB_name ]]
 		then
@@ -39,9 +43,11 @@ do
 		
 	;;
 	"ListDatabases")
+	cd ~/Downloads/bash/Bash-project/DBMS
 		ls 
 	;;
 	"DropDatabase")
+	cd ~/Downloads/bash/Bash-project/DBMS
 		read -p "Please Enter a Database to remove: " DB_name
 		if [[ -z $DB_name ]]
 		then

@@ -1,4 +1,4 @@
-select var in CreateTable DropTable ListTables goBack
+select var in CreateTable DropTable ListTables InsertIntoTable SelectFromTable goBack
 do
 	case $var in
 	"CreateTable")
@@ -65,13 +65,97 @@ do
 		fi
 	;;
 	"goBack")
-        cd ~/Downloads/bash/Bash-project/DBMS
 		~/Downloads/bash/Bash-project/database.sh
 	;;
-    	
 	"ListTables")
         ls 
     ;;
+	"InsertIntoTable")
+	read -p "please Enter Table Name: " TBName
+		if [[ -z $TBName ]]
+	then
+		echo invalid Table name
+	else
+		if [[ -e $TBName ]]
+		then 
+			columnSize=`wc -l .$TBName-metadata | cut -d" " -f1`
+			lineee=""
+			for ((i=0;i<columnSize;i++))
+			do
+				line=`sed -n "$(echo $((i+1)))p" .$TBName-metadata`
+				colName=`echo $line | cut -d: -f1`
+				colType=`echo $line | cut -d: -f2`
+				colPkCheck=`echo $line | cut -d: -f3`
+				read -p "please enter a value for $colName: " val
+				lineee+=$val:
+				#echo $colName $colType $colPkCheck
+			done
+			echo $lineee >> $TBName
+			echo "Data is inserted"
+		else
+			echo table is not already exist
+		fi
+	fi
+	;;
+	"SelectFromTable")
+    read -p "Please enter table name to select from: " TBname
+    if [[ -z $TBname ]]
+    then
+		echo "Invalid Table name"
+    else
+		if [ -e "$TBname" ]
+		then
+	    	# Read metadata to get column names and data types
+	    	echo "Select operation on table $TBname:"
+	    	echo "1. Display all columns"
+	    	echo "2. Display specific columns"
+	    	echo "3. Filter rows based on conditions"
+	    	read -p "Choose an option (1-3): " option
+	    
+	    	case $option in
+			1)
+		    	# Display all data in the table
+		    	echo "Displaying all rows from $TBname:"
+		    	cat "$TBname"
+		    	;;
+			2)
+		    	# Display specific columns
+		    	echo "Available columns:"
+		    	columnSize=$(wc -l < .$TBname-metadata)
+		    	for ((i=1; i<=columnSize; i++))
+		    	do
+				colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
+				echo "$i) $colName"
+		    	done
+		    	read -p "Enter the column numbers to display (comma separated): " cols
+
+		    	cat | cut -d: -f$cols $TBname								   
+		    	;;
+			3)
+		    	# Filter rows based on a condition
+		    	read -p "Enter the column number to filter: " filterCol
+		    	read -p "Enter the value to filter by: " filterVal
+
+		    	echo "Rows where column $filterCol has value $filterVal:"
+		    	colIndex=$((filterCol-1))
+		    	for row in $(cat "$TBname")
+		    	do
+				rowValues=($row)
+				if [[ "${rowValues[$colIndex]}" == "$filterVal" ]]
+				then
+				    echo "$row"
+				fi
+		    	done
+		    	;;
+			*)
+		    	echo "Invalid option"
+		    	;;
+	    	esac
+			else
+	    		echo "Table $TBname doesn't exist"
+		fi
+    fi  
+	;;
 	*)
 	echo invalid input
 	esac
