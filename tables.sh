@@ -18,17 +18,26 @@ do
 					for ((i=0; i<$colNum; i++))
 					do
            				line=""
-           				read -p "Enter name of column $((i+1)): " colName
-           				if [[ -z $colName || ! $colName =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
-               				echo "Invalid column name. Skipping..."
-               				continue
-           				fi
+						while true
+							do
+           						read -p "Enter name of column $((i+1)): " colName
+           						if [[ -z $colName || ! $colName =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+               						echo "Invalid column name. Please use alphanumeric characters only."
+               					else
+			   						break
+			   					fi
+		   					done
+
            				line+=$colName:
-           				read -p "Enter data type for column $colName (e.g., int, string): " datatype
-           				if [[ -z $datatype || ! $datatype =~ ^(int|string)$ ]]; then
-               				echo "Invalid data type. Use 'int' or 'string'."
-               				continue
+						while true
+						do
+           					read -p "Enter data type for column $colName (e.g., int, string): " datatype
+           					if [[ -z $datatype || ! $datatype =~ ^(int|string)$ ]]; then
+               					echo "Invalid data type. Use 'int' or 'string'."
+							else
+								break
           					fi
+						done
            				line+=$datatype:
            				if [[ $flag -eq 0 ]]; then
                				read -p "Do you want to make $colName the primary key? (yes/no): " pkCheck
@@ -79,7 +88,7 @@ do
 		if [[ -e $TBName ]]
 		then 
 			columnSize=`wc -l .$TBName-metadata | cut -d" " -f1`
-			lineee=""
+			data=""
 			for ((i=0;i<columnSize;i++))
 			do
 				line=`sed -n "$(echo $((i+1)))p" .$TBName-metadata`
@@ -87,13 +96,33 @@ do
 				colType=`echo $line | cut -d: -f2`
 				colPkCheck=`echo $line | cut -d: -f3`
 				read -p "please enter a value for $colName: " val
-				lineee+=$val:
+				if [[ $colPkCheck == "pk" ]]
+				then
+					if [[ `grep -c "$val:" $TBName` -ne 0 ]]
+					then
+						echo "Primary key value already exists. Please enter a unique value."
+						i=$((i-1))
+						continue
+					fi
+				fi
+				if [[ $colType == "int" && ! $val =~ ^[0-9]+$ ]]
+				then
+					echo "Invalid value. Please enter an integer."
+					i=$((i-1))
+					continue
+				elif [[ $colType == "string" && ! $val =~ ^[a-zA-Z0-9_]+$ ]]
+				then
+					echo "Invalid value. Please enter a string."
+					i=$((i-1))
+					continue
+				else data+=$val:
+				fi
 				#echo $colName $colType $colPkCheck
 			done
-			echo $lineee >> $TBName
+			echo $data >> $TBName
 			echo "Data is inserted"
 		else
-			echo table is not already exist
+			echo table is doesn\'t exist
 		fi
 	fi
 	;;
