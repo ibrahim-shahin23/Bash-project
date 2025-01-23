@@ -182,15 +182,20 @@ select var in CreateDatabase SelectDatabase ListDatabases DropDatabase; do
 						    echo "Delete operation on table $TBname:"
 						    echo "1. Delete rows based on condition"
 						    read -p "Choose an option (1): " option
-						    
+						    columnSize=$(wc -l < .$TBname-metadata)
 						    case $option in
 							1)
 							    read -p "Enter the column number to filter for deletion: " filterCol
+							    if [[ -z $filterCol || $filterCol -lt 1 || $filterCol -gt $columnSize ]]; then
+                        					echo "Invalid column number. Please enter a valid number between 1 and $columnSize."
+                        					 else 
 							    read -p "Enter the value to delete: " filterVal
+							      
 							    colIndex=$((filterCol))  # Corrected index
 							    # حذف الصفوف التي تطابق الشرط
 							    awk -F: -v col="$colIndex" -v value="$filterVal" '$col != value' "$TBname" > tempFile && mv tempFile "$TBname"
 							    echo "Rows deleted successfully."
+							    fi
 							    ;;
 							*)
 							    echo "Invalid option"
@@ -215,8 +220,14 @@ select var in CreateDatabase SelectDatabase ListDatabases DropDatabase; do
 					    case $option in
 						1)
 						    read -p "Enter the column number to update: " updateCol
-						    read -p "Enter the value to update: " newValue
+						    if [[ -z $updateCol || $updateCol -lt 1 || $updateCol -gt $columnSize ]]; then
+                        					echo "Invalid column number. Please enter a valid number between 1 and $columnSize."
+                        					else
+						    read -p "Enter the value to update: " newValue						
 						    read -p "Enter the column number to filter for update: " filterCol
+						    if [[ -z $filterCol || $filterCol -lt 1 || $filterCol -gt $columnSize ]]; then
+                        					echo "Invalid column number. Please enter a valid number between 1 and $columnSize."
+                        					else
 						    read -p "Enter the value to filter by: " filterVal
 						    colIndex=$((filterCol))  # Corrected index
 						    updateIndex=$((updateCol))
@@ -226,6 +237,8 @@ select var in CreateDatabase SelectDatabase ListDatabases DropDatabase; do
 						    'BEGIN {OFS=":"} $filterCol == filterVal {$updateCol = newValue} {print $0}' "$TBname" > tempFile && mv tempFile "$TBname"
 						    
 						    echo "Table updated successfully."
+						    fi
+						    fi
 						    ;;
 						*)
 						    echo "Invalid option"
