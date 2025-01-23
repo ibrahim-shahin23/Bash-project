@@ -61,34 +61,47 @@
 						fi
 					;;
 					"InsertintoTable")
-						read -p "please Enter Table Name: " TBName
-							if [[ -z $TBName ]]
-						then
-							echo invalid Table name
-						else
-							if [[ -e $TBName ]]
-							then 
-								columnSize=`wc -l .$TBName-metadata | cut -d" " -f1`
-								lineee=""
-								for ((i=0;i<columnSize;i++))
-								do
+						    read -p "Please enter Table Name: " TBName
+						    if [[ -z $TBName ]]; then
+							echo "Invalid Table Name"
+						    else
+							if [[ -e $TBName && -e .$TBName-metadata ]]; then
+							    columnSize=$(wc -l < .$TBName-metadata)
+							    lineee=""
+							    primaryKey=""
+							    for ((i=0; i<columnSize; i++)); do
+								line=$(sed -n "$((i+1))p" .$TBName-metadata)
+								colName=$(echo $line | cut -d: -f1)
+								colType=$(echo $line | cut -d: -f2)
+								colPkCheck=$(echo $line | cut -d: -f3)
+								read -p "Please enter value for column '$colName': " val
 
-									line=`sed -n "$(echo $((i+1)))p" .$TBName-metadata`
-									colName=`echo $line | cut -d: -f1`
-									colType=`echo $line | cut -d: -f2`
-									colPkCheck=`echo $line | cut -d: -f3`
-									read -p "please enter value for col $colName: " val
-									lineee+=$val:
-									#echo $colName $colType $colPkCheck
-								done
-								echo $lineee >> $TBName
-								echo "Data is inserted"
+								# Data type validation
+								if [[ "$colType" == "int" && ! "$val" =~ ^[0-9]+$ ]]; then
+								    echo "Error: Column '$colName' expects an integer value."
+								    return  # Exit the function in case of invalid data
+								elif [[ "$colType" == "string" && ! "$val" =~ ^[a-zA-Z]+$ ]]; then
+								    echo "Error: Column '$colName' expects a string value."
+								    return  # Exit the function in case of invalid data
+								elif [[ "$colPkCheck" == "pk" ]]; then
+								    if grep -q "^$val," "$TBName"; then
+									echo "Error: Primary key constraint violated. Value '$val' already exists."
+									return  # Exit the function in case of primary key violation
+								    fi
+								fi
 
+								lineee+="$val"
+								if [[ $i -lt $((columnSize-1)) ]]; then
+								    lineee+=","
+								fi
+							    done
+							    echo "$lineee" >> $TBName
+							    echo "Data is inserted"
 							else
-								echo table is not already exist
+							    echo "Table or metadata file does not exist"
 							fi
-						fi	
-					;;
+						    fi
+						;;
 					"SelectFromTable")
 						    read -p "Please enter table name to select from: " TBname
 						    if [[ -z $TBname ]]
@@ -105,44 +118,36 @@
 							    read -p "Choose an option (1-3): " option
 							    
 							    case $option in
-								1)
-								    # Display all data in the table
-								    echo "Displaying all rows from $TBname:"
-								    cat "$TBname"
-								    ;;
-								2)
-								    # Display specific columns
-								    echo "Available columns:"
-								    columnSize=$(wc -l < .$TBname-metadata)
-								    for ((i=1; i<=columnSize; i++))
-								    do
-									colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
-									echo "$i) $colName"
-								    done
-								    read -p "Enter the column numbers to display (comma separated): " cols
-								    
-								    cat | cut -d: -f$cols $TBname								   
-										    
-								    ;;
-								3)
-								    # Filter rows based on a condition
-								    read -p "Enter the column number to filter: " filterCol
-								    read -p "Enter the value to filter by: " filterVal
-								    
-								    echo "Rows where column $filterCol has value $filterVal:"
-								    colIndex=$((filterCol-1))
-								    for row in $(cat "$TBname")
-								    do
-									rowValues=($row)
-									if [[ "${rowValues[$colIndex]}" == "$filterVal" ]]
-									then
-									    echo "$row"
-									fi
-								    done
-								    ;;
-								*)
-								    echo "Invalid option"
-								    ;;
+							    1)
+								# Display all data in the table
+								echo "Displaying all rows from $TBname:"
+								cat "$TBname"
+								;;
+							    2)
+								# Display specific columns
+								echo "Available columns:"
+								columnSize=$(wc -l < .$TBname-metadata)
+								for ((i=1; i<=columnSize; i++))
+								do
+								    colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
+								    echo "$i) $colName"
+								done
+								read -p "Enter the column numbers to display (comma separated): " cols
+								# Display the selected columns
+								cat "$TBname" | cut -d: -f$cols
+								;;
+							    3)
+								# Filter rows based on a condition
+								read -p "Enter the column number to filter: " filterCol
+								read -p "Enter the value to filter by: " filterVal
+								echo "Rows where column $filterCol has value $filterVal:"
+								colIndex=$((filterCol-1))
+								# Using awk for filtering
+								awk -F: -v col="$colIndex" -v value="$filterVal" '$col == value' "$TBname"
+								;;
+							    *)
+								echo "Invalid option"
+								;;
 							    esac
 							else
 							    echo "Table $TBname doesn't exist"
