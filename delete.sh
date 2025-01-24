@@ -41,8 +41,13 @@ case $option in
         read -p "Enter the value to filter for deletion: " filterVal
         if [[ -z $filterVal ]]; then
             echo "Invalid value. Please enter a valid value to filter by."
-        else
-            break
+	    else
+			if [[ `grep -c "$filterVal:" $TBname` -eq 0 ]]
+			then
+				echo "value doesn't exist"
+			else
+        	    break
+			fi
         fi
     done
 
@@ -61,3 +66,4 @@ case $option in
     echo "Invalid option"
     ;;
 esac
+ ~/Downloads/bash/Bash-project/tables.sh

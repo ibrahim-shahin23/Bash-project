@@ -33,22 +33,21 @@ colPkCheck=$(echo $columnMetadata | cut -d: -f3)
 
 while true; do
     read -p "Enter the new value to update: " val
-
     if [[ $colPkCheck == "pk" ]]; then
 
         if [[ $(grep -c "$val:" "$TBname") -ne 0 ]]; then
             echo "Primary key value '$val' already exists. Please enter a unique value."
-        else
-            break
+            continue
         fi
-    else
-        break
     fi
-
     if [[ $colType == "int" && ! $val =~ ^[0-9]+$ ]]; then
         echo "Invalid value. Please enter a valid integer."
+        continue
     elif [[ $colType == "string" && ! $val =~ ^[a-zA-Z0-9_]+$ ]]; then
         echo "Invalid value. Please enter a valid string (alphanumeric and underscores only)."
+        continue
+    else
+        break
     fi
 done
 
@@ -68,7 +67,12 @@ while true; do
     if [[ -z $filterVal ]]; then
         echo "Invalid value. Please enter a valid value to filter by."
     else
-        break
+        if [[ `grep -c "$filterVal:" $TBname` -eq 0 ]]
+			then
+				echo "value doesn't exist"
+			else
+        	    break
+			fi
     fi
 done
 
@@ -76,3 +80,4 @@ awk -F: -v filterCol="$filterCol" -v filterVal="$filterVal" -v updateCol="$updat
     'BEGIN {OFS=":"} $filterCol == filterVal { $updateCol = newValue } { print $0 }' "$TBname" > tempFile && mv tempFile "$TBname"
 
 echo "Table updated successfully."
+ ~/Downloads/bash/Bash-project/tables.sh

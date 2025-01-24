@@ -1,9 +1,9 @@
-# echo "alias tables='~/Downloads/bash/Bash-project/tables.sh'" >> ~/.zshrc
 
 read -p "Please enter table name to select from: " TBname
 if [[ -z $TBname ]]
 then
 	echo "Invalid Table name"
+	            ~/Downloads/bash/Bash-project/tables.sh
 else
 	if [ -e "$TBname" ]
 	then

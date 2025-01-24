@@ -11,3 +11,4 @@ read -p "Please Enter a Table to remove: " TB_name
 				echo $TB_name Table doesn\'t exist
 			fi
 		fi
+ ~/Downloads/bash/Bash-project/tables.sh
