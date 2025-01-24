@@ -26,3 +26,4 @@ else
 		    echo "$TBname Table doesn't exist"
 	fi
 fi
+ ~/Downloads/bash/Bash-project/tables.sh

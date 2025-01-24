@@ -1,9 +1,4 @@
-#! /usr/bin/bash 
-
-# CreateDatabase SelectDatabase CreateTable InsertTable 
-
 cd ~/Downloads/bash/Bash-project/DBMS
-echo "Welcome to the Bash DBMS App!"
 
 select var in CreateDatabase SelectDatabase ListDatabases DropDatabase exit
 do
@@ -11,19 +6,19 @@ do
 	"CreateDatabase")
 	cd ~/Downloads/bash/Bash-project/DBMS
 		read -p "Enter a new Database name: " DB_name
-		if [[ -z $DB_name ]]
-		then
-			echo invalid DBname
+		if [[ -z $DB_name || ! $DB_name =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+			echo "Invalid database name. Please use alphanumeric characters only."
 		else
 			if [ -e "$DB_name" ]
 			then 
 				echo $DB_name Database is already exist
 			else
+
 				mkdir "$DB_name"
 				echo $DB_name Database is created successfully
 			fi
 		fi
-		
+		~/Downloads/bash/Bash-project/database.sh
 	;;
 	"SelectDatabase")
 	cd ~/Downloads/bash/Bash-project/DBMS
@@ -41,11 +36,12 @@ do
 				echo $DB_name Database doesn\'t exist
 			fi
 		fi
-		
+	~/Downloads/bash/Bash-project/database.sh
 	;;
 	"ListDatabases")
 	cd ~/Downloads/bash/Bash-project/DBMS
-		ls 
+		ls
+		~/Downloads/bash/Bash-project/database.sh 
 	;;
 	"DropDatabase")
 	cd ~/Downloads/bash/Bash-project/DBMS
@@ -62,6 +58,7 @@ do
 				echo $DB_name Database doesn\'t exist
 			fi
 		fi
+		~/Downloads/bash/Bash-project/database.sh
 	;;
 	"exit")
 		echo "Goodbye!"
