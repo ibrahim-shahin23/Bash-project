@@ -12,7 +12,8 @@ do
 		exit
 	;;
 	"ListTables")
-        ls 
+        ls
+		~/Downloads/bash/Bash-project/tables.sh 
     ;;
 	"InsertIntoTable")
 		~/Downloads/bash/Bash-project/insert.sh

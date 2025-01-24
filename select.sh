@@ -35,7 +35,12 @@ else
 			if [[ ! $cols =~ ^[0-9]+(,[0-9]+)*$ ]]; then
 				echo "Invalid input. Please enter column numbers separated by commas."
 			else
-	    		cat "$TBname" | cut -d: -f$cols $TBname	
+	    		output=`cat "$TBname" | cut -d: -f$cols $TBname`
+				if [[ -z $output ]]; then
+					echo "No data to display."
+				else
+					echo "$output"
+				fi	
 			fi
             ~/Downloads/bash/Bash-project/tables.sh							   
 	    	;;

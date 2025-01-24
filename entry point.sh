@@ -1,5 +1,3 @@
-#! /usr/bin/bash 
-
 # DBMS initialization
 
 if [  ! -d "~/Downloads/bash/Bash-project/DBMS" ]
@@ -8,6 +6,5 @@ then
 fi
 
 cd ~/Downloads/bash/Bash-project/DBMS 
-echo DBMS is running...
-
+echo "Welcome to the Bash DBMS App!"
 source ~/Downloads/bash/Bash-project/database.sh
