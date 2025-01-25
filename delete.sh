@@ -42,7 +42,7 @@ case $option in
         if [[ -z $filterVal ]]; then
             echo "Invalid value. Please enter a valid value to filter by."
 	    else
-			if [[ `grep -c "$filterVal:" $TBname` -eq 0 ]]
+			if [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]]
 			then
 				echo "value doesn't exist"
 			else

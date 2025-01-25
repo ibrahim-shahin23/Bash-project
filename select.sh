@@ -6,6 +6,10 @@ then
 	            ~/Downloads/bash/Bash-project/tables.sh
 else
 	if [ -e "$TBname" ]
+		if [[ ! -s "$TBname" ]]; then
+			echo "Table is empty."
+			~/Downloads/bash/Bash-project/tables.sh
+		fi
 	then
     	# Read metadata to get column names and data types
     	echo "Select operation on table $TBname:"
@@ -35,9 +39,9 @@ else
 			if [[ ! $cols =~ ^[0-9]+(,[0-9]+)*$ ]]; then
 				echo "Invalid input. Please enter column numbers separated by commas."
 			else
-	    		output=`cat "$TBname" | cut -d: -f$cols $TBname`
+	    		output=`cut -d: -f$cols $TBname`
 				if [[ -z $output ]]; then
-					echo "No data to display."
+					echo "Invalid column numbers. Please enter numbers between 1 and $columnSize."
 				else
 					echo "$output"
 				fi	
