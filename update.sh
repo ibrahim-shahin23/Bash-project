@@ -14,8 +14,14 @@ done
 
 echo "Update operation on table $TBname:"
 
+echo "Available columns:"
 columnSize=$(wc -l < .$TBname-metadata)
-
+for ((i=1; i<=columnSize; i++))
+	do
+		colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
+		echo "$i) $colName"
+	done	
+    
 while true; do
     read -p "Enter the column number to update: " updateCol
 
@@ -67,12 +73,12 @@ while true; do
     if [[ -z $filterVal ]]; then
         echo "Invalid value. Please enter a valid value to filter by."
     else
-        if [[ `grep -c "$filterVal:" $TBname` -eq 0 ]]
-			then
-				echo "value doesn't exist"
-			else
-        	    break
-			fi
+		if [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]]
+		then
+			echo "value doesn't exist"
+		else
+            break
+		fi
     fi
 done
 

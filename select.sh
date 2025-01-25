@@ -62,14 +62,20 @@ else
 			if [[ ! $filterCol =~ ^[0-9]+$ || $filterCol -le 0 || $filterCol -gt $columnSize ]]; then
 				echo "Invalid column number. Please enter a valid column number."
 			else
+			while true; do
 				read -p "Enter the value to filter by: " filterVal
 				if [[ -z $filterVal ]]; then
 					echo "Invalid value. Please enter a value to filter by."
+				elif [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]]; then
+					echo "No rows found where column $filterCol has value $filterVal."
+					break
 				else
 					echo "Rows where column $filterCol has value $filterVal:"
 					# Using awk for filtering
 					awk -F: -v col="$filterCol" -v value="$filterVal" '$col == value' "$TBname"
+					break
 				fi
+			done
 			fi
             ~/Downloads/bash/Bash-project/tables.sh
 			;;
