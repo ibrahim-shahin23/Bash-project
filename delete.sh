@@ -1,78 +1,82 @@
 #!/bin/bash
-if [[ ! "$(ls -A )" ]]; then
-	echo "There's no tables to delete from"
+
+if [[ ! "$(ls -A)" ]]; then
+    dialog --msgbox "There's no tables to delete from." 10 50
 else
-	while true; do
-	    read -p "Please enter Table name to delete from: " TBname
-	    if [[ -z $TBname ]]; then
-		echo "Invalid Table name. Please try again."
-		else
-			break
-		fi	
-	done
-	    if [ -e "$TBname" ]; then
+    while true; do
+        TBname=$(dialog --inputbox "Please enter table name to delete from:" 10 50 3>&1 1>&2 2>&3)
+        if [[ $? -ne 0 ]]; then
+            dialog --msgbox "Operation canceled." 10 50
+            break
+        elif [[ -z $TBname ]]; then
+            dialog --msgbox "Invalid Table name. Please try again." 10 50
+        else
+    if [[ -e "$TBname" ]]; then
+        if [[ -s "$TBname" ]]; then
+            while true; do
+                option=$(dialog --menu "Delete operation on table $TBname:" 15 50 3 \
+                    1 "Delete rows based on condition" \
+                    2 "Delete all rows" \
+                    3 "Cancel" \
+                    3>&1 1>&2 2>&3)
 
-	    if [[ -s "$TBname" ]]; then
-		
-		while true; do
-		    echo "Delete operation on table $TBname:"
-		    echo "1. Delete rows based on condition"
-		    echo "2. Delete all rows"
-		    echo "3. cancel"
-		    read -p "Choose an option (1 - 3): " option
+                if [[ $? -ne 0 ]]; then
+                    dialog --msgbox "Operation canceled." 10 50
+                    exit
+                fi
 
-		case $option in
-		1)
-			echo "Update operation on table $TBname:"
-		    while true; do
-			echo "Available columns:"
-			columnSize=$(wc -l < .$TBname-metadata)
-			for ((i=1; i<=columnSize; i++))
-				do
-					colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
-					echo "$i) $colName"
-				done
-			read -p "Enter the column number to filter for deletion: " filterCol
-			if [[ -z $filterCol || $filterCol -lt 1 || $filterCol -gt $columnSize ]]; then
-			    echo "Invalid column number. Please enter a valid number between 1 and $columnSize."
-			else
-			    break
-			fi
-		    done
+                case $option in
+                1)
+                    columnSize=$(wc -l < ".$TBname-metadata")
+                    colMenu=""
+                    for ((i = 1; i <= columnSize; i++)); do
+                        colName=$(sed -n "$i p" ".$TBname-metadata" | cut -d: -f1)
+                        colMenu+="$i $colName "
+                    done
 
-		    
-			read -p "Enter the value to filter for deletion: " filterVal
-			if [[ -z $filterVal ]]; then
-			    echo "Invalid value. Please enter a valid value to filter by."
-                continue
-			elif [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]] ;then
-                echo "value doesn't exist"
-                continue
-			fi
-		    
-		    awk -F: -v col="$filterCol" -v value="$filterVal" '$col != value' "$TBname" > tempFile && mv tempFile "$TBname"
-		    echo "Rows deleted successfully based on the condition."
-		    ;;
-		2)
-		    if [[ -s "$TBname" ]]; then
-			> "$TBname" 
-			echo "All rows deleted successfully."
-		    else
-			echo "Table is already empty."
-		    fi
-		    ;;
-		3)
-        break
-		;;	
-		*)
-		    echo "Invalid option"
-		    ;;
-		esac
-        done
-			else 
-            echo "$TBname table is empty" 
-            fi
-		    else
-			echo "$TBname Table doesn't exist. Please try again."
-		    fi
-fi	
+                    filterCol=$(dialog --menu "Select column to filter for deletion:" 15 50 $columnSize $colMenu 3>&1 1>&2 2>&3)
+                    if [[ $? -ne 0 ]]; then
+                        dialog --msgbox "Operation canceled." 10 50
+                        continue
+                    fi
+
+                    filterVal=$(dialog --inputbox "Enter value to filter for deletion:" 10 50 3>&1 1>&2 2>&3)
+                    if [[ $? -ne 0 ]]; then
+                        dialog --msgbox "Operation canceled." 10 50
+                        continue
+                    elif [[ -z $filterVal ]]; then
+                        dialog --msgbox "Invalid value. Please enter a valid value to filter by." 10 50
+                        continue
+                    fi
+
+                    if [[ $(cut -d: -f"$filterCol" "$TBname" | grep -c ^"$filterVal"$) -eq 0 ]]; then
+                        dialog --msgbox "No rows found with the specified value." 10 50
+                        continue
+                    fi
+
+                    awk -F: -v col="$filterCol" -v value="$filterVal" '$col != value' "$TBname" > tempFile && mv tempFile "$TBname"
+                    dialog --msgbox "Rows deleted successfully based on the condition." 10 50
+                    ;;
+                2)
+                    >"$TBname"
+                    dialog --msgbox "All rows deleted successfully." 10 50
+                    ;;
+                3)
+                    break
+                    ;;
+                *)
+                    dialog --msgbox "Invalid option. Please try again." 10 50
+                    ;;
+                esac
+            done
+        else
+            dialog --msgbox "The table $TBname is empty." 10 50
+        fi
+    else
+        dialog --msgbox "Table $TBname does not exist. Please try again." 10 50
+    fi
+            
+        fi
+    done
+
+fi
