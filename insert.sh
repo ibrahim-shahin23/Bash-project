@@ -43,4 +43,3 @@ read -p "please Enter Table Name: " TBName
 			echo table is doesn\'t exist
 		fi
 	fi
- ~/Downloads/bash/Bash-project/tables.sh

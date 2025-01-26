@@ -52,4 +52,4 @@ else
 		fi
 	fi
 fi
- ~/Downloads/bash/Bash-project/tables.sh
+return

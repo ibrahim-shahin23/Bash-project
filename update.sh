@@ -86,4 +86,3 @@ awk -F: -v filterCol="$filterCol" -v filterVal="$filterVal" -v updateCol="$updat
     'BEGIN {OFS=":"} $filterCol == filterVal { $updateCol = newValue } { print $0 }' "$TBname" > tempFile && mv tempFile "$TBname"
 
 echo "Table updated successfully."
- ~/Downloads/bash/Bash-project/tables.sh

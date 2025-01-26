@@ -3,15 +3,11 @@ read -p "Please enter table name to select from: " TBname
 if [[ -z $TBname ]]
 then
 	echo "Invalid Table name"
-	            ~/Downloads/bash/Bash-project/tables.sh
 else
 	if [ -e "$TBname" ]
-		if [[ ! -s "$TBname" ]]; then
-			echo "Table is empty."
-			~/Downloads/bash/Bash-project/tables.sh
-		fi
 	then
-    	# Read metadata to get column names and data types
+		if [[ -s "$TBname" ]]; then
+			    	# Read metadata to get column names and data types
     	echo "Select operation on table $TBname:"
     	echo "1. Display all columns"
     	echo "2. Display specific columns"
@@ -24,7 +20,6 @@ else
 	    	# Display all data in the table
 	    	echo "Displaying all rows from $TBname:"
 	    	cat "$TBname"
-            ~/Downloads/bash/Bash-project/tables.sh
 	    	;;
 		2)
 	    	# Display specific columns
@@ -46,7 +41,6 @@ else
 					echo "$output"
 				fi	
 			fi
-            ~/Downloads/bash/Bash-project/tables.sh							   
 	    	;;
 		3)
 	    	# Filter rows based on a condition
@@ -77,19 +71,18 @@ else
 				fi
 			done
 			fi
-            ~/Downloads/bash/Bash-project/tables.sh
 			;;
         4)
         	# Go back to main menu
-        	~/Downloads/bash/Bash-project/tables.sh
         	;;
 		*)
 	    	echo "Invalid option"
-            ~/Downloads/bash/Bash-project/tables.sh
 	    	;;
     	esac
-		else
-    		echo "Table $TBname doesn't exist"
-            ~/Downloads/bash/Bash-project/tables.sh
+			else
+				echo "Table is empty."
+		fi
+	else
+    	echo "Table $TBname doesn't exist"
 	fi
 fi  

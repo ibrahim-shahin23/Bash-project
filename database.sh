@@ -5,7 +5,6 @@ do
 	do
 		case $var in
 		"CreateDatabase")
-		cd ~/Downloads/bash/Bash-project/DBMS
 			read -p "Enter a new Database name: " DB_name
 			if [[ -z $DB_name || ! $DB_name =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
 				echo "Invalid database name. Please use alphanumeric characters only."
@@ -22,16 +21,14 @@ do
 			break
 		;;
 		"SelectDatabase")
-		cd ~/Downloads/bash/Bash-project/DBMS
 			read -p "Please Enter your Database name: " DB_name
 			if [[ -z $DB_name ]]
 			then
 				echo invalid DBname
 			else
 				if [ -e "$DB_name" ]
-				then 
-					cd "$DB_name"
-					echo Connected to database $DB_name
+				then
+					export DB_name 
 					source ~/Downloads/bash/Bash-project/tables.sh
 				else
 					echo $DB_name Database doesn\'t exist
@@ -40,12 +37,10 @@ do
 		break
 		;;
 		"ListDatabases")
-			cd ~/Downloads/bash/Bash-project/DBMS
-			ls ~/Downloads/bash/Bash-project/DBMS
+			ls #~/Downloads/bash/Bash-project/DBMS
 			break
 		;;
 		"DropDatabase")
-			cd ~/Downloads/bash/Bash-project/DBMS
 			read -p "Please Enter a Database to remove: " DB_name
 			if [[ -z $DB_name ]]
 			then
@@ -67,6 +62,7 @@ do
 			;;
 		*)
 			echo invalid input
+			break
 	esac
 	done
 done

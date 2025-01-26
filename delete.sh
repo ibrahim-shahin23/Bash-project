@@ -66,4 +66,3 @@ case $option in
     echo "Invalid option"
     ;;
 esac
- ~/Downloads/bash/Bash-project/tables.sh
