@@ -5,5 +5,5 @@ then
 	mkdir -p ~/Downloads/bash/Bash-project/DBMS 
 fi
 
-echo "Welcome to the Bash DBMS App!"
+dialog --title "Welcome" --msgbox "Welcome to the Bash DBMS App!" 10 40
 source ~/Downloads/bash/Bash-project/database.sh
