@@ -21,39 +21,54 @@ do
 			break
 		;;
 		"SelectDatabase")
-			read -p "Please Enter your Database name: " DB_name
-			if [[ -z $DB_name ]]
-			then
-				echo invalid DBname
+			if [[ ! $(ls -A)  ]] ; then
+				echo "There's no databases to select"
 			else
-				if [ -e "$DB_name" ]
+				read -p "Please Enter your Database name: " DB_name
+				if [[ -z $DB_name ]]
 				then
-					export DB_name 
-					source ~/Downloads/bash/Bash-project/tables.sh
+					echo invalid DBname
 				else
-					echo $DB_name Database doesn\'t exist
+					if [ -e "$DB_name" ]
+					then
+						export DB_name 
+						source ~/Downloads/bash/Bash-project/tables.sh
+					else
+						echo $DB_name Database doesn\'t exist
+					fi
 				fi
+
 			fi
+
 		break
 		;;
 		"ListDatabases")
-			ls #~/Downloads/bash/Bash-project/DBMS
+			if [[ ! $(ls -A)  ]] ; then
+				echo "There's no databases to display"
+			else
+				ls #~/Downloads/bash/Bash-project/DBMS
+			fi
 			break
 		;;
 		"DropDatabase")
-			read -p "Please Enter a Database to remove: " DB_name
-			if [[ -z $DB_name ]]
-			then
-				echo invalid DBname
+			if [[ ! $(ls -A)  ]] ; then
+				echo "There's no databases to Drop"
 			else
-				if [ -e "$DB_name" ]
-				then 
-					rm -r "$DB_name"
-					echo database $DB_name is removed
+				read -p "Please Enter a Database to remove: " DB_name
+				if [[ -z $DB_name ]]
+				then
+					echo invalid DBname
 				else
-					echo $DB_name Database doesn\'t exist
+					if [ -e "$DB_name" ]
+					then 
+						rm -r "$DB_name"
+						echo database $DB_name is removed
+					else
+						echo $DB_name Database doesn\'t exist
+					fi
 				fi
 			fi
+
 			break
 		;;
 		"exit")
