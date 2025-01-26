@@ -10,12 +10,14 @@ else
 		then
 			if [[ -s "$TBname" ]]; then
 				    	# Read metadata to get column names and data types
+
+			while true; do
 	    	echo "Select operation on table $TBname:"
 	    	echo "1. Display all columns"
 	    	echo "2. Display specific columns"
 	    	echo "3. Filter rows based on conditions"
-	        echo "4. Back to main menu"
-	    	read -p "Choose an option (1-3): " option
+	        echo "4. cancel"
+	    	read -p "Choose an option (1-4): " option
 	
 	    	case $option in
 			1)
@@ -32,6 +34,7 @@ else
 						colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
 						echo "$i) $colName"
 		    		done
+				while true ; do
 		    	read -p "Enter the column numbers to display (comma separated): " cols
 				if [[ ! $cols =~ ^[0-9]+(,[0-9]+)*$ ]]; then
 					echo "Invalid input. Please enter column numbers separated by commas."
@@ -41,8 +44,10 @@ else
 						echo "Invalid column numbers. Please enter numbers between 1 and $columnSize."
 					else
 						echo "$output"
+						break
 					fi	
 				fi
+				done
 		    	;;
 			3)
 		    	# Filter rows based on a condition
@@ -74,13 +79,14 @@ else
 				done
 				fi
 				;;
-	        4)
-	        	# Go back to main menu
+	        4)	
+				break
 	        	;;
 			*)
 		    	echo "Invalid option"
 		    	;;
 	    	esac
+			done
 				else
 					echo "Table is empty."
 			fi

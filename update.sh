@@ -17,16 +17,11 @@ else
                 echo "1. Update rows based on condition"
                 echo "2. cancel"
                 read -p "Choose an option (1 or 2): " option
-
-                if [[ $option -eq 1 || $option -eq 2 ]]; then
-                break
-                else
-                echo "Invalid option. Please enter 1 or 2."
-                fi
-            done
+            
             case $option in
             1)
-                    echo "Update operation on table $TBname:"
+                echo "Update operation on table $TBname:"
+                while true; do
                 echo "Available columns:"
                 columnSize=$(wc -l < .$TBname-metadata)
                 for ((i=1; i<=columnSize; i++))
@@ -35,7 +30,6 @@ else
                         echo "$i) $colName"
                     done	
             
-                while true; do
                     read -p "Enter the column number to update: " updateCol
 
                     if [[ -z $updateCol || $updateCol -lt 1 || $updateCol -gt $columnSize ]]; then
@@ -101,11 +95,13 @@ else
                 echo "Table updated successfully."
                 ;;
             2)
+                break
                 ;;
             *)
                 echo "Invalid option"
                 ;;
             esac
+            done
             else
             echo "$TBname table is empty"
         fi

@@ -19,18 +19,12 @@ else
 		    echo "1. Delete rows based on condition"
 		    echo "2. Delete all rows"
 		    echo "3. cancel"
-		    read -p "Choose an option (1 or 2 or 3): " option
-
-		    if [[ $option -eq 1 || $option -eq 2 || $option -eq 3 ]]; then
-			break
-		    else
-			echo "Invalid option. Please enter 1 or 2 or 3."
-		    fi
-		done
+		    read -p "Choose an option (1 - 3): " option
 
 		case $option in
 		1)
 			echo "Update operation on table $TBname:"
+		    while true; do
 			echo "Available columns:"
 			columnSize=$(wc -l < .$TBname-metadata)
 			for ((i=1; i<=columnSize; i++))
@@ -38,7 +32,6 @@ else
 					colName=$(sed -n "$((i))p" .$TBname-metadata | cut -d: -f1)
 					echo "$i) $colName"
 				done
-		    while true; do
 			read -p "Enter the column number to filter for deletion: " filterCol
 			if [[ -z $filterCol || $filterCol -lt 1 || $filterCol -gt $columnSize ]]; then
 			    echo "Invalid column number. Please enter a valid number between 1 and $columnSize."
@@ -47,20 +40,16 @@ else
 			fi
 		    done
 
-		    while true; do
+		    
 			read -p "Enter the value to filter for deletion: " filterVal
 			if [[ -z $filterVal ]]; then
 			    echo "Invalid value. Please enter a valid value to filter by."
-			    else
-					if [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]]
-					then
-						echo "value doesn't exist"
-					else
-				    break
-					fi
+                continue
+			elif [[ `cut -d: -f$filterCol $TBname | grep -c ^$filterVal$` -eq 0 ]] ;then
+                echo "value doesn't exist"
+                continue
 			fi
-		    done
-
+		    
 		    awk -F: -v col="$filterCol" -v value="$filterVal" '$col != value' "$TBname" > tempFile && mv tempFile "$TBname"
 		    echo "Rows deleted successfully based on the condition."
 		    ;;
@@ -73,11 +62,13 @@ else
 		    fi
 		    ;;
 		3)
+        break
 		;;	
 		*)
 		    echo "Invalid option"
 		    ;;
 		esac
+        done
 			else 
             echo "$TBname table is empty" 
             fi
