@@ -1,25 +1,31 @@
 if [[ ! "$(ls -A )" ]]; then
 	echo "There's no tables to insert into"
 else
-	read -p "please Enter Table Name: " TBName
-	if [[ -z $TBName ]]
+	read -p "please Enter Table Name: " TBname
+	if [[ -z $TBname ]]
 	then
 		echo invalid Table name
 	else
-		if [[ -e $TBName ]]
+		if [[ -e $TBname ]]
 		then 
-			columnSize=`wc -l .$TBName-metadata | cut -d" " -f1`
+			while true; do
+			columnSize=`wc -l .$TBname-metadata | cut -d" " -f1`
 			data=""
 			for ((i=0;i<columnSize;i++))
 			do
-				line=`sed -n "$(echo $((i+1)))p" .$TBName-metadata`
+				line=`sed -n "$(echo $((i+1)))p" .$TBname-metadata`
 				colName=`echo $line | cut -d: -f1`
 				colType=`echo $line | cut -d: -f2`
 				colPkCheck=`echo $line | cut -d: -f3`
 				read -p "please enter a value for $colName: " val
+				if [[ -z $val ]]; then
+					echo "enter a valid value."
+					i=$((i-1))
+					continue
+				fi
 				if [[ $colPkCheck == "pk" ]]
 				then
-					if [[ `grep -c "$val:" $TBName` -ne 0 ]]
+					if [[ `grep -c "$val:" $TBname` -ne 0 ]]
 					then
 						echo "Primary key value already exists. Please enter a unique value."
 						i=$((i-1))
@@ -40,10 +46,17 @@ else
 				fi
 				#echo $colName $colType $colPkCheck
 			done
-			echo $data >> $TBName
-			echo "Data is inserted"
+			echo $data >> $TBname
+			echo "Data is inserted successfully"
+			read -p "do you want to insert again? (yes/y): " response
+            if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+				continue
+			else
+				break
+			fi
+			done
 		else
-			echo table is doesn\'t exist
+			echo "$TBname table is doesn\'t exist"
 		fi
 	fi
 fi
