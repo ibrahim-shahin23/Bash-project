@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ ! "$(ls -A )" ]]; then
-	echo "There's no tables to select from"
+	echo "There's no tables to delete from"
 else
 	while true; do
 	    read -p "Please enter Table name to delete from: " TBname
@@ -11,7 +11,9 @@ else
 		fi	
 	done
 	    if [ -e "$TBname" ]; then
-	    		
+
+	    if [[ -s "$TBname" ]]; then
+		
 		while true; do
 		    echo "Delete operation on table $TBname:"
 		    echo "1. Delete rows based on condition"
@@ -71,13 +73,14 @@ else
 		    fi
 		    ;;
 		3)
-			cd ~/Downloads/bash/Bash-project/tables.sh
 		;;	
 		*)
 		    echo "Invalid option"
 		    ;;
 		esac
-			
+			else 
+            echo "$TBname table is empty" 
+            fi
 		    else
 			echo "$TBname Table doesn't exist. Please try again."
 		    fi
