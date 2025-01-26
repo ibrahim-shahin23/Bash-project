@@ -2,30 +2,29 @@ select var in CreateTable DropTable ListTables InsertIntoTable SelectFromTable g
 do
 	case $var in
 	"CreateTable")
-		~/Downloads/bash/Bash-project/createTable.sh
+		source ~/Downloads/bash/Bash-project/createTable.sh
 	;;
 	"DropTable")
-		~/Downloads/bash/Bash-project/dropTable.sh
+		source ~/Downloads/bash/Bash-project/dropTable.sh
 	;;
 	"goBack")
-		~/Downloads/bash/Bash-project/database.sh
-		exit
+		source ~/Downloads/bash/Bash-project/database.sh
 	;;
 	"ListTables")
-        ls
-		~/Downloads/bash/Bash-project/tables.sh 
+        ls ~/Downloads/bash/Bash-project/DBMS/$DB_name
+		source ~/Downloads/bash/Bash-project/tables.sh 
     ;;
 	"InsertIntoTable")
-		~/Downloads/bash/Bash-project/insert.sh
+		source ~/Downloads/bash/Bash-project/insert.sh
 	;;
 	"SelectFromTable")
-		~/Downloads/bash/Bash-project/select.sh
+		source ~/Downloads/bash/Bash-project/select.sh
 	;;
 	"DeleteFromTable")
-	    ~/Downloads/bash/Bash-project/delete.sh			    
+	    source ~/Downloads/bash/Bash-project/delete.sh			    
 	;;
 	"UpdateTable")
-		~/Downloads/bash/Bash-project/update.sh
+		source ~/Downloads/bash/Bash-project/update.sh
 	;;
 	*)
 	echo invalid input
