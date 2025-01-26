@@ -1,5 +1,8 @@
-read -p "please Enter Table Name: " TBName
-		if [[ -z $TBName ]]
+if [[ ! "$(ls -A )" ]]; then
+	echo "There's no tables to insert into"
+else
+	read -p "please Enter Table Name: " TBName
+	if [[ -z $TBName ]]
 	then
 		echo invalid Table name
 	else
@@ -43,3 +46,4 @@ read -p "please Enter Table Name: " TBName
 			echo table is doesn\'t exist
 		fi
 	fi
+fi
