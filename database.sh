@@ -43,15 +43,23 @@ while true; do
             if [[ ! $(ls -A) ]]; then
                 dialog --msgbox "There are no databases to select." 10 50
             else
+                while true; do
                 db_name=$(dialog --inputbox "Enter the name of the database to select:" 10 50 3>&1 1>&2 2>&3)
-                if [[ -z $db_name ]]; then
+                exit_status=$?
+    			if [[ $exit_status -eq 1 ]]; then
+				# User selected "Cancel," return to the main menu
+				break
+
+                elif [[ -z $db_name ]]; then
                     dialog --msgbox "Invalid database name!" 10 50
                 elif [ -e "$db_name" ]; then
                     export DB_name="$db_name"
                     source ~/Downloads/bash/Bash-project/tables.sh
+                    break
                 else
                     dialog --msgbox "Database $db_name does not exist!" 10 50
                 fi
+                done
             fi
             ;;
         3) 
@@ -66,8 +74,13 @@ while true; do
             if [[ ! $(ls -A) ]]; then
                 dialog --msgbox "There are no databases to drop." 10 50
             else
+                while true; do
                 db_name=$(dialog --inputbox "Enter the name of the database to drop:" 10 50 3>&1 1>&2 2>&3)
-                if [[ -z $db_name ]]; then
+                exit_status=$?
+                if [[ $exit_status -eq 1 ]]; then
+				# User selected "Cancel," return to the main menu
+				break
+                elif [[ -z $db_name ]]; then
                     dialog --msgbox "Invalid database name!" 10 50
                 elif [ -e "$db_name" ]; then
                     rm -r "$db_name"
@@ -75,6 +88,7 @@ while true; do
                 else
                     dialog --msgbox "Database $db_name does not exist!" 10 50
                 fi
+                done
             fi
             ;;
         5) 
