@@ -2,6 +2,7 @@
 while true; do
 if [[ ! "$(ls -A)" ]]; then
     dialog --msgbox "There are no tables to insert into." 10 50
+    break
 else
     # Ask user to enter table name using dialog
     TBname=$(dialog --inputbox "Please Enter Table Name:" 10 50 3>&1 1>&2 2>&3)
@@ -10,8 +11,6 @@ else
         # User selected "Cancel," exit the loop
         break
     fi
-
-    
     if [[ -z $TBname ]]; then
         dialog --msgbox "Invalid Table name." 10 50
     else

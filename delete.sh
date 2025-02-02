@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [[ ! "$(ls -A)" ]]; then
     dialog --msgbox "There's no tables to delete from." 10 50
 else
